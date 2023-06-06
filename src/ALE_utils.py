@@ -79,23 +79,7 @@ def interpolate_correction_layers(xcoor, ycoor, data, method):
 
     return np.flipud(data_resampl)
 
-<<<<<<< HEAD
 def enu2rdr(E, N ,U, az_angle, inc_angle,):
-=======
-def enu2rdr(E, N ,U, inc_angle,az_angle):
-    '''
-    Converting ENU to ground/azimuth
-    
-    E,N,U: East, North, Up components (meter)
-    inc_angle: incidence angle (degree)
-    az_angle: azimuth angle of the LOS vector from the ground to the SAR platform 
-              measured from the north with anti-clockwise direction as positive (degree)
-    
-    grng: ground range projected from LOS to ground (meter)
-    azi: azimuth component along track direction (meter)
-    '''
-    
->>>>>>> 153cc14e3cc25ec77cbd7ffa0dec70be30b7d1c8
     rng = E * np.sin(np.deg2rad(inc_angle)) * np.sin(np.deg2rad(az_angle)) * -1 + N * np.sin(np.deg2rad(inc_angle)) * np.cos(np.deg2rad(az_angle)) + U * np.cos(np.deg2rad(inc_angle))
     grng = rng / np.sin((np.deg2rad(inc_angle)))
     azi = E * np.sin(np.deg2rad(az_angle - 90)) * -1 + N* np.cos(np.deg2rad(az_angle - 90))
