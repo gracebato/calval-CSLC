@@ -12,11 +12,12 @@ datels = f.read().splitlines()
 
 #Parameters
 data_dir = 's3://opera-provisional-products/CSLC/pst_adt_common/gamma_v.0.3/Rosamond/Ascending'
-save_dir = './Rosamond/A064_run4'
+save_dir = './Rosamond/A064_run6_128x_converted'
 burst_id = 't064_135523_iw2'
 snr_threshold = 15
 solidtide = 'True'
 cr_network = 'Rosamond'
+ovsFactor = 128
 
 # Create folders
 os.makedirs(f'{save_dir}/pngs', exist_ok=True)
@@ -45,7 +46,8 @@ for d in datels:
                                     'date':d, 
                                     'snr_threshold':snr_threshold, 
                                     'solidtide':solidtide,
-                                    'cr_network':cr_network},
+                                    'cr_network':cr_network,
+                                    'ovsFactor':ovsFactor},
                         kernel_name='calval-CSLC')
     
 # End runtime evaluation
