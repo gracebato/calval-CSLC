@@ -79,7 +79,7 @@ def interpolate_correction_layers(xcoor, ycoor, data, method):
 
     return np.flipud(data_resampl)
 
-def enu2rdr(E, N ,U, inc_angle,az_angle):
+def enu2rdr(E, N ,U, az_angle, inc_angle,):
     rng = E * np.sin(np.deg2rad(inc_angle)) * np.sin(np.deg2rad(az_angle)) * -1 + N * np.sin(np.deg2rad(inc_angle)) * np.cos(np.deg2rad(az_angle)) + U * np.cos(np.deg2rad(inc_angle))
     grng = rng / np.sin((np.deg2rad(inc_angle)))
     azi = E * np.sin(np.deg2rad(az_angle - 90)) * -1 + N* np.cos(np.deg2rad(az_angle - 90)) * 1
