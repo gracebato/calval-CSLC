@@ -79,8 +79,70 @@ def interpolate_correction_layers(xcoor, ycoor, data, method):
 
     return np.flipud(data_resampl)
 
-def enu2rdr(inc_angle,az_angle):
-    rng = np.sin(np.deg2rad(inc_angle)) * np.sin(np.deg2rad(az_angle)) * -1 + np.sin(np.deg2rad(inc_angle)) * np.cos(np.deg2rad(az_angle)) + np.cos(np.deg2rad(inc_angle))
-    azi = np.sin(np.deg2rad(az_angle - 90)) * -1 + np.cos(np.deg2rad(az_angle - 90)) * 1
+def enu2rdr(E, N ,U, inc_angle,az_angle):
+    rng = E * np.sin(np.deg2rad(inc_angle)) * np.sin(np.deg2rad(az_angle)) * -1 + N * np.sin(np.deg2rad(inc_angle)) * np.cos(np.deg2rad(az_angle)) + U * np.cos(np.deg2rad(inc_angle))
+    azi = E * np.sin(np.deg2rad(az_angle - 90)) * -1 + N* np.cos(np.deg2rad(az_angle - 90)) * 1
 
     return rng, azi
+
+def heading2azimuth_angle(head_angle, look_direction='right'):
+    """
+    Convert satellite orbit heading angle into azimuth angle as defined in ISCE-2
+
+    Parameters
+    ----------
+    head_angle: np.ndarray or float
+        Azimuth angle from ground target to the satellite measured
+        from the North in anti-clockwise direction as positive
+    look_direction: str
+        Satellite look direction. S1-A/B is right; NISAR is left
+
+    Returns
+    -------
+    az_angle: np.ndarray or float
+        Measured from the North in anti-clockwise direction. Same definition
+        as ISCE2 azimuth angle (second band of *los raster)
+    """
+    if look_direction == 'right':
+        az_angle = (head_angle - 90) * -1
+    else:
+        az_angle = (head_angle + 90) * -1
+    az_angle -= np.round(az_angle / 360.) * 360.
+    
+    return az_angle
+
+def get_snr_peak(img: np.ndarray, cutoff_percentile: float=3.0):
+    '''
+    Estimate the signal-to-noise ration (SNR) of the peak
+    in the input image patch
+    Parameter
+    ---------
+    img: numpy.ndarray
+        SLC image patch to calculate the SNR
+    cutout: float
+        Cutout ratio of high and low part of the signal to cutoff
+    Returns
+    -------
+    snr_peak_db: float
+        SNR of the peak in decibel (db)
+    '''
+
+    power_arr = img.real ** 2 + img.imag ** 2
+
+    # build up the mask array
+    thres_low = np.nanpercentile(power_arr, cutoff_percentile)
+    thres_high = np.nanpercentile(power_arr, 100 - cutoff_percentile)
+    mask_threshold = np.logical_and(power_arr < thres_low,
+                                    power_arr > thres_high)
+    mask_invalid_pixel = np.logical_and(power_arr <= 0.0,
+                                        np.isnan(power_arr))
+    ma_power_arr = np.ma.masked_array(power_arr,
+                                      mask=np.logical_and(mask_threshold,
+                                                          mask_invalid_pixel))
+
+    peak_power = np.nanmax(power_arr)
+    mean_background_power = np.mean(ma_power_arr)
+
+    snr_peak_db = np.log10(peak_power / mean_background_power) * 10.0
+
+    return snr_peak_db
