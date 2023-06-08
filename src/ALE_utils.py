@@ -79,39 +79,19 @@ def interpolate_correction_layers(xcoor, ycoor, data, method):
 
     return np.flipud(data_resampl)
 
-def enu2rdr(E, N ,U, az_angle, inc_angle):
-    rng = E * np.sin(np.deg2rad(inc_angle)) * np.sin(np.deg2rad(az_angle)) * -1 + N * np.sin(np.deg2rad(inc_angle)) * np.cos(np.deg2rad(az_angle)) + U * np.cos(np.deg2rad(inc_angle))
+# def enu2rdr(E, N ,U, az_angle, inc_angle):
+#     rng = E * np.sin(np.deg2rad(inc_angle)) * np.sin(np.deg2rad(az_angle)) * -1 + N * np.sin(np.deg2rad(inc_angle)) * np.cos(np.deg2rad(az_angle)) + U * np.cos(np.deg2rad(inc_angle))
+#     grng = rng / np.sin((np.deg2rad(inc_angle)))
+#     azi = E * np.sin(np.deg2rad(az_angle - 90)) * -1 + N* np.cos(np.deg2rad(az_angle - 90))
+
+#     return grng, azi
+
+def enu2rdr(E, N, U, az_angle, inc_angle):
+    rng = E * np.sin(np.deg2rad(inc_angle)) * np.cos(np.deg2rad(az_angle - 90)) * -1 + N * np.sin(np.deg2rad(inc_angle)) * np.sin(np.deg2rad(az_angle - 90)) + U * np.cos(np.deg2rad(inc_angle))
     grng = rng / np.sin((np.deg2rad(inc_angle)))
-    azi = E * np.sin(np.deg2rad(az_angle - 90)) * -1 + N* np.cos(np.deg2rad(az_angle - 90))
+    azi = E * np.sin(np.deg2rad(az_angle - 90)) * -1 + N * np.cos(np.deg2rad(az_angle - 90))
 
     return grng, azi
-
-def heading2azimuth_angle(head_angle, look_direction='right'):
-    """
-    Convert satellite orbit heading angle into azimuth angle as defined in ISCE-2
-
-    Parameters
-    ----------
-    head_angle: np.ndarray or float
-        Azimuth angle of the SAR platform along track direction measured
-        from the North with clockwise direction as positive, in the unit of degree
-    look_direction: str
-        Satellite look direction. S1-A/B is right; NISAR is left
-
-    Returns
-    -------
-    az_angle: np.ndarray or float
-        azimuth angle of the LOS vector from the ground to the SAR platform 
-        measured from the north with anti-clockwise direction as positive, in the unit of degree
-        head_angle = 90 - az_angle
-    """
-    if look_direction == 'right':
-        az_angle = (head_angle - 90) * -1
-    else:
-        az_angle = (head_angle + 90) * -1
-    az_angle -= np.round(az_angle / 360.) * 360.
-    
-    return az_angle
 
 def get_snr_peak(img: np.ndarray, cutoff_percentile: float=3.0):
     '''
