@@ -37,9 +37,9 @@ def createParser(iargs = None):
     parser.add_argument("--tsmethod", dest="tsmethod",
             default='mintpy', type=str, help='method for time-series inversion: mintpy (default), sbas (simple SBAS method)')
     parser.add_argument("--pngfile", dest='png',
-            default='RLE_ts.png',type=str, help='burst ID to be processed (default: RLE_ts.png)')
+            default='RLE_ts.png',type=str, help='PNG file name for time-series RLE  (default: RLE_ts.png)')
     parser.add_argument("--csvfile", dest='csv',             
-            default='RLE_ts.csv',type=str, help='burst ID to be processed (default: RLE_ts.csv)')
+            default='RLE_ts.csv',type=str, help='CSV file name for time-series RLE (default: RLE_ts.csv)')
     return parser.parse_args(args=iargs)
 
 def run(inps):
@@ -151,6 +151,8 @@ def run(inps):
     time_taken = end_time - st_time
     print(f'{time_taken}s taken for all pycuampcor processing')
 
+    st_time = time.time()
+
     #applying SBAS approach
     list_rgoff = df['ref'] + '_' + df['sec'] + '.rg_off.tif'
     list_azoff = df['ref'] + '_' + df['sec'] + '.az_off.tif'
@@ -161,6 +163,10 @@ def run(inps):
         az_avg, az_std, _ = simple_SBAS_stats(list_azoff,list_snr,out_dir,snr_th)
     else:
         rg_avg, rg_std, az_avg, az_std = mintpy_SBAS_stats(list_rgoff,list_azoff,list_snr,out_dir,snr_th) 
+
+    end_time = time.time()
+    time_taken = end_time - st_time
+    print(f'{time_taken}s taken for SBAS processing')
 
     df = None
     _ = {'date':days, 'rg_avg':rg_avg, 'rg_std':rg_std, 'az_avg':az_avg, 'az_std':az_std}

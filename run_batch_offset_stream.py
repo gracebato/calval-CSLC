@@ -39,9 +39,9 @@ def createParser(iargs = None):
     parser.add_argument("--tsmethod", dest="tsmethod",
             default='mintpy', type=str, help='method for time-series inversion: mintpy (default), sbas (simple SBAS method)')
     parser.add_argument("--pngfile", dest='png',
-            default='RLE_ts.png',type=str, help='burst ID to be processed (default: RLE_ts.png)')
+            default='RLE_ts.png',type=str, help='PNG file name for time-series RLE (default: RLE_ts.png)')
     parser.add_argument("--csvfile", dest='csv',             
-            default='RLE_ts.csv',type=str, help='burst ID to be processed (default: RLE_ts.csv)')
+            default='RLE_ts.csv',type=str, help='CSV file name for time-series RLE (default: RLE_ts.csv)')
     return parser.parse_args(args=iargs)
 
 def run(inps):
