@@ -151,8 +151,8 @@ def run(inps):
             p.wait()
 
     end_time = time.time()
-    time_taken = end_time - st_time
-    print(f'{time_taken}s taken for all pycuampcor processing')
+    time_taken = (end_time - st_time)/60.
+    print(f'{time_taken} min taken for all pycuampcor processing')
 
     st_time = time.time()
 
@@ -168,26 +168,26 @@ def run(inps):
         rg_avg, rg_std, az_avg, az_std = mintpy_SBAS_stats(list_rgoff,list_azoff,list_snr,out_dir,snr_th) 
 
     end_time = time.time()
-    time_taken = end_time - st_time
-    print(f'{time_taken}s taken for SBAS processing')
+    time_taken = (end_time - st_time)/60.
+    print(f'{time_taken} min taken for SBAS processing')
 
     df = None
     _ = {'date':days, 'rg_avg':rg_avg, 'rg_std':rg_std, 'az_avg':az_avg, 'az_std':az_std}
     df = pd.DataFrame.from_dict(_)
-    df['date'] = pd.to_datetime(df['date'],format='%Y%m%d')
     df.to_csv(inps.csv, index=False)
+    df['date'] = pd.to_datetime(df['date'],format='%Y%m%d')
 
     fig, ax = plt.subplots(2,1,figsize=(15,10),sharex=True)
 
-    ax[0].set_title('RLE in dx (m)')
-    ax[0].axhspan(-0.5,0.5,color='gray', alpha=0.2)    #OPERA requirements in dx
-    ax[0].errorbar(df['date'],df['rg_avg'],df['rg_std'],marker='s',linestyle=' ',ecolor='k')
+    ax[0].set_title('RLE in Ground Range (m)')
+    ax[0].axhspan(-0.5,0.5,color='red', alpha=0.05)    #OPERA requirements in ground range
+    ax[0].errorbar(df['date'],df['rg_avg'],df['rg_std'],marker='o',linestyle=' ',ecolor='lightgray', elinewidth=3, capsize=0, zorder=0)
     ax[0].set_ylim(-5,5)
     ax[0].grid(axis='x',linestyle='--')
 
-    ax[1].set_title('RLE in dy (m)')
-    ax[1].axhspan(-0.75,0.75,color='gray', alpha=0.2)    #OPERA requirements in dy
-    ax[1].errorbar(df['date'],df['az_avg'],df['az_std'],marker='s',linestyle=' ',ecolor='k')
+    ax[1].set_title('RLE in Azimuth (m)')
+    ax[1].axhspan(-0.75,0.75,color='red', alpha=0.05)    #OPERA requirements in azimuth
+    ax[1].errorbar(df['date'],df['az_avg'],df['az_std'],marker='o',linestyle=' ',ecolor='lightgray', elinewidth=3, capsize=0, zorder=0)
     ax[1].set_xlabel('dates')
     ax[1].set_ylim(-5,5)
     ax[1].grid(axis='x',linestyle='--')
