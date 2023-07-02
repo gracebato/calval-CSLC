@@ -226,7 +226,8 @@ def run(inps):
     _ = {'date':days, 'rg_avg':rg_avg, 'rg_std':rg_std, 'az_avg':az_avg, 'az_std':az_std}
     df = pd.DataFrame.from_dict(_)
     df.to_csv(inps.csv, index=False)
-    df['date'] = pd.to_datetime(df['date'],format='%Y%m%d')
+    df['date'] =  pd.to_datetime(df['date'])
+    df['date'].dt.strftime('%Y%m%d')
 
     fig, ax = plt.subplots(2,1,figsize=(15,10),sharex=True)
 
