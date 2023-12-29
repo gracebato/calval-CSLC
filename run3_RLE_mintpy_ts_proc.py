@@ -41,26 +41,16 @@ def main(inps):
 
     refDates = []
     secDates = []
-    for _ in list_rg_tif:
-        _rgtif = _.split('/')[-1]
-        refDate = _rgtif[0:8]
+    for i in list_rg_tif:
+        rgtif = i.split('/')[-1]
+        refDate = rgtif[0:8]
         refDates.append(refDate)
-        secDate = _rgtif[9:17]
+        secDate = rgtif[9:17]
         secDates.append(secDate)
 
-    _ = {'ref': refDates, 'sec': secDates}
-    df = pd.DataFrame.from_dict(_)
-
-    days = refDates + secDates
-    days = list(np.unique(sorted(days)))
-    exclude_days_ = df[(df.ref<='20150515')]
-    exclude_days = exclude_days_.ref.unique()
-    days = (list(filter(lambda x: x not in exclude_days, days)) )
-
-    print(f'Removing CSLCs with dates: {exclude_days}')
-
+    offset_pair = {'ref': refDates, 'sec': secDates}
+    df = pd.DataFrame.from_dict(offset_pair)
     num_pairs = df.shape[0]   #number of pairs
-    n_days = len(days)      #number of unique days
 
     print('')
     print(f'Number of pairs for offset tracking {num_pairs}\n')
@@ -72,10 +62,10 @@ def main(inps):
     list_snr = df['ref'] + '_' + df['sec'] + '.snr.tif'
 
     if ( tsmethod == 'sbas'):
-        rg_avg, rg_std, _ = simple_SBAS_stats(list_rgoff,list_snr,savedir,snr_th)
-        az_avg, az_std, _ = simple_SBAS_stats(list_azoff,list_snr,savedir,snr_th)
+        rg_avg, rg_std, offset_pair = simple_SBAS_stats(list_rgoff,list_snr,savedir,snr_th)
+        az_avg, az_std, offset_pair = simple_SBAS_stats(list_azoff,list_snr,savedir,snr_th)
     else:
-        rg_avg, rg_std, az_avg, az_std = mintpy_SBAS_stats(list_rgoff,list_azoff,list_snr,savedir,snr_th,0.25,nprocs) 
+        rg_avg, rg_std, az_avg, az_std, days = mintpy_SBAS_stats(list_rgoff,list_azoff,list_snr,savedir,snr_th,0.25,nprocs) 
 
     end_time = time.time()
     time_taken = (end_time - start_time)/60.

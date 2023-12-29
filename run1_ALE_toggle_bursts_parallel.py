@@ -49,7 +49,10 @@ def run_papermill(p):
     cr_network = p[4]
     snr_threshold = p[5]
     prod_version = p[-1]
-    solidtide='False'
+    if cr_network == 'Rosamond':
+        solidtide='True'
+    else:
+        solidtide='False'
     ovsFactor = p[6]
     
     save_dir = f'{p[-2]}/{cr_network}/{burst_id.upper()}'
@@ -171,9 +174,14 @@ def main(inps):
         print(f'Number of CPUs your computer have: {os.cpu_count()}')
         print(f'Using {nprocs} CPUs for this processing.')
 
-        # Download CR data first
-        with concurrent.futures.ProcessPoolExecutor(max_workers=1) as executor:
-            executor.map(download_crdata,params)
+        if not os.listdir(f'{savedir}/{burst_cr_network}/{burstId.upper()}/crdata'): 
+            # Download CR data first
+            print("Downloading corner-reflector data")
+            with concurrent.futures.ProcessPoolExecutor(max_workers=1) as executor:
+                executor.map(download_crdata,params)
+
+        else: 
+            print("Using pre-downloaded corner-reflector data") 
 
         # Run papermill
         time.sleep(5)

@@ -4,7 +4,7 @@ import os
 import datetime as dt
 import numpy as np
 from mintpy.utils import readfile
-from mintpy.cli import ifgram_inversion, load_data, modify_network
+from mintpy.cli import ifgram_inversion, load_data, modify_network, info
 import pandas as pd
 import fsspec
 import boto3
@@ -376,4 +376,4 @@ def mintpy_SBAS_stats(rgofflist,azofflist,snrlist,out_dir,snr_thr,q=0.25,nprocs=
         az_avg.append(np.nanmean(_))
         az_std.append(np.nanstd(_)) 
 
-    return rg_avg, rg_std, az_avg, az_std
+    return rg_avg, rg_std, az_avg, az_std, days
